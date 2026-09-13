@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "CV \u2194 Job Match Checker",
+  "version": "1.0.0",
+  "description": "Save your CV once, then get an AI-generated match percentage for any LinkedIn job posting you open.",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting",
+    "sidePanel"
+  ],
+  "host_permissions": [
+    "https://www.linkedin.com/*",
+    "https://api.anthropic.com/*",
+    "https://api.openai.com/*",
+    "https://api.groq.com/*"
+  ],
+  "action": {
+    "default_title": "CV Job Match Checker"
+  },
+  "side_panel": {
+    "default_path": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.linkedin.com/jobs/*",
+        "https://www.linkedin.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}
