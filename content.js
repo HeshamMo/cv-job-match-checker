@@ -125,11 +125,14 @@ function sleep(ms) {
 // Expand it before reading the posting so both change detection and the
 // match request use the complete description.
 function expandJobDescription() {
-  const moreSpan = [...document.querySelectorAll("span")]
-    .find((el) => el.textContent.trim() === "more");
-  if (!moreSpan || !isVisible(moreSpan)) return false;
 
-  moreSpan.click();
+
+  const aboutJob = [...document.querySelectorAll("div")]
+    .find(div => div.querySelector("h2")?.textContent.trim() === "About the job");
+
+  const moreSpan = aboutJob?.querySelector("span span span:nth-child(2)");
+  if (!moreSpan || !isVisible(moreSpan)) return false;
+  moreSpan?.click();
   return true;
 }
 
