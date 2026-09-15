@@ -121,11 +121,24 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+// LinkedIn truncates some descriptions behind a span labelled "more".
+// Expand it before reading the posting so both change detection and the
+// match request use the complete description.
+function expandJobDescription() {
+  const moreSpan = [...document.querySelectorAll("span")]
+    .find((el) => el.textContent.trim() === "more");
+  if (!moreSpan || !isVisible(moreSpan)) return false;
+
+  moreSpan.click();
+  return true;
+}
+
 // LinkedIn is a single-page app that lazy-renders content, so the
 // description panel may not exist in the DOM yet the instant we're
 // asked. Poll for a few seconds before giving up.
 async function extractJobPosting(maxWaitMs = 5000, intervalMs = 300) {
   const start = Date.now();
+  if (expandJobDescription()) await sleep(intervalMs);
   let result = extractOnce();
   while (!result.ok && Date.now() - start < maxWaitMs) {
     await sleep(intervalMs);
@@ -143,7 +156,10 @@ function getJobFingerprint(job) {
     .join("\u001f");
 }
 
-function notifyIfJobChanged() {
+async function notifyIfJobChanged() {
+  // Allow the DOM to render the expanded content after clicking "more".
+  if (expandJobDescription()) await sleep(300);
+
   const job = extractOnce();
   if (!job.ok) return;
 
